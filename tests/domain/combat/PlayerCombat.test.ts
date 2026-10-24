@@ -13,18 +13,22 @@ const createCombat = () => {
   const combat = new PlayerCombat(stats, {
     attacks: [
       {
+        id: 'test-attack-1',
         durationSeconds: 0.3,
         hitStartSeconds: 0.1,
         hitEndSeconds: 0.2,
         recoverySeconds: 0.2,
         staminaCost: 10,
+        damageMultiplier: 1,
       },
       {
+        id: 'test-attack-2',
         durationSeconds: 0.35,
         hitStartSeconds: 0.12,
         hitEndSeconds: 0.24,
         recoverySeconds: 0.25,
         staminaCost: 12,
+        damageMultiplier: 1.2,
       },
     ],
   });
@@ -84,7 +88,7 @@ describe('PlayerCombat', () => {
     const { stats } = createCombat();
 
     expect(() => new PlayerCombat(stats, { attacks: [] })).toThrow(
-      'Player combat requires at least one attack definition.',
+      'Attack definitions must contain at least one attack.',
     );
     expect(
       () =>
@@ -96,6 +100,8 @@ describe('PlayerCombat', () => {
               hitEndSeconds: 0.3,
               recoverySeconds: 0.1,
               staminaCost: 1,
+              id: 'invalid-window',
+              damageMultiplier: 1,
             },
           ],
         }),
@@ -115,6 +121,8 @@ describe('PlayerCombat', () => {
               hitEndSeconds: 0.1,
               recoverySeconds: 0.1,
               staminaCost: 1,
+              id: 'invalid-dodge',
+              damageMultiplier: 1,
             },
           ],
           dodgeDurationSeconds: 0,

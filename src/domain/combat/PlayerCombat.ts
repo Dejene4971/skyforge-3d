@@ -1,4 +1,8 @@
 import type { CombatStats } from './CombatStats';
+import {
+  validateAttackDefinitions,
+  type AttackDefinition,
+} from '../../data/combat/AttackDefinitions';
 
 export type PlayerCombatStateName = 'idle' | 'attack' | 'recovery' | 'dodge' | 'hit' | 'defeated';
 
@@ -8,13 +12,7 @@ export type PlayerCombatState = {
   readonly attackIndex: number;
 };
 
-export type PlayerAttackDefinition = {
-  readonly durationSeconds: number;
-  readonly hitStartSeconds: number;
-  readonly hitEndSeconds: number;
-  readonly recoverySeconds: number;
-  readonly staminaCost: number;
-};
+export type PlayerAttackDefinition = AttackDefinition;
 
 export type PlayerCombatOptions = {
   readonly attacks: readonly PlayerAttackDefinition[];
@@ -36,12 +34,7 @@ export class PlayerCombat {
     private readonly stats: CombatStats,
     private readonly options: PlayerCombatOptions,
   ) {
-    if (options.attacks.length === 0) {
-      throw new Error('Player combat requires at least one attack definition.');
-    }
-    for (const attack of options.attacks) {
-      validateAttack(attack);
-    }
+    validateAttackDefinitions(options.attacks);
 
     this.hitStunSeconds = options.hitStunSeconds ?? 0.25;
     if (!Number.isFinite(this.hitStunSeconds) || this.hitStunSeconds <= 0) {
@@ -182,23 +175,3 @@ export class PlayerCombat {
     return false;
   }
 }
-
-const validateAttack = (attack: PlayerAttackDefinition): void => {
-  const values = [
-    attack.durationSeconds,
-    attack.hitStartSeconds,
-    attack.hitEndSeconds,
-    attack.recoverySeconds,
-    attack.staminaCost,
-  ];
-  if (values.some((value) => !Number.isFinite(value) || value < 0)) {
-    throw new Error('Attack definition values must be non-negative finite numbers.');
-  }
-  if (
-    attack.durationSeconds <= 0 ||
-    attack.hitStartSeconds >= attack.hitEndSeconds ||
-    attack.hitEndSeconds > attack.durationSeconds
-  ) {
-    throw new Error('Attack timing windows must fit within attack duration.');
-  }
-};

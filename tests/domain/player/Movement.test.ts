@@ -55,6 +55,24 @@ describe('PlayerMovement', () => {
     expect(state.facingRadians).toBeCloseTo(Math.PI / 2);
   });
 
+  it('resets position, velocity, and facing state', () => {
+    const movement = new PlayerMovement();
+
+    movement.update({ x: 1, y: 0 }, 1);
+    const state = movement.reset({
+      position: { x: -2, z: 3 },
+      velocity: { x: 0, y: 0 },
+      facingRadians: Math.PI,
+    });
+
+    expect(state).toEqual({
+      position: { x: -2, z: 3 },
+      velocity: { x: 0, y: 0 },
+      facingRadians: Math.PI,
+    });
+    expect(movement.update({ x: 0, y: 0 }, 0).position).toEqual({ x: -2, z: 3 });
+  });
+
   it('rejects invalid configuration, state, input, and delta values', () => {
     expect(() => new PlayerMovement({ maxSpeed: 0 })).toThrow(
       'Maximum speed must be a positive finite number.',

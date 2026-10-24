@@ -48,6 +48,22 @@ export class PlayerMovement {
     };
   }
 
+  public reset(
+    state: MovementState = {
+      position: { x: 0, z: 0 },
+      velocity: { x: 0, y: 0 },
+      facingRadians: 0,
+    },
+  ): MovementState {
+    validateState(state);
+    this.state = {
+      position: { ...state.position },
+      velocity: { ...state.velocity },
+      facingRadians: state.facingRadians,
+    };
+    return this.snapshot;
+  }
+
   public update(input: MovementVector, deltaSeconds: number): MovementState {
     if (!Number.isFinite(deltaSeconds) || deltaSeconds < 0) {
       throw new Error('Movement delta time must be a non-negative finite number.');

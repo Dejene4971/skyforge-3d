@@ -51,4 +51,23 @@ describe('PlayerEntity', () => {
     player.update({ x: 0, y: 0 }, 0);
     expect(player.object.position.toArray()).toEqual([-4, 0, 2]);
   });
+
+  it('exposes dodge start and invulnerability through the runtime entity', () => {
+    const player = new PlayerEntity({
+      dodge: {
+        durationSeconds: 0.4,
+        cooldownSeconds: 0.5,
+        invulnerabilitySeconds: 0.2,
+      },
+    });
+
+    expect(player.startDodge()).toBe(true);
+    expect(player.isInvulnerable).toBe(true);
+    player.update({ x: 0, y: 0 }, 0.25);
+    expect(player.isInvulnerable).toBe(false);
+    expect(player.startDodge()).toBe(false);
+    player.update({ x: 0, y: 0 }, 0.25);
+    player.update({ x: 0, y: 0 }, 0.25);
+    expect(player.startDodge()).toBe(true);
+  });
 });
